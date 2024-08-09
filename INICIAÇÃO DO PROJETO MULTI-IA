@@ -1,0 +1,96 @@
+import speech_recognition as sr
+from googletrans import Translator
+from gtts import gTTS
+import playsound
+import os
+from langdetect import detect
+
+# Inicialização
+recognizer = sr.Recognizer()
+translator = Translator()
+
+# Idioma de destino padrão (alterar conforme necessário)
+default_target_language = 'en'
+
+def detect_language(text):
+    """Detecta o idioma do texto"""
+    try:
+        lang = detect(text)
+        print(f"Idioma detectado: {lang}")
+        return lang
+    except Exception as e:
+        print(f"Erro na detecção de idioma: {e}")
+        return None
+
+def translate_text(text, src_lang, dest_lang):
+    """Traduza o texto do idioma de origem para o idioma de destino"""
+    try:
+        translated = translator.translate(text, src=src_lang, dest=dest_lang)
+        print(f"Texto traduzido: {translated.text}")
+        return translated.text
+    except Exception as e:
+        print(f"Erro na tradução: {e}")
+        return None
+
+def speak_text(text, lang):
+    """Converte texto em fala e reproduz"""
+    try:
+        tts = gTTS(text=text, lang=lang)
+        audio_file = 'temp_audio.mp3'
+        tts.save(audio_file)
+        playsound.playsound(audio_file)
+        os.remove(audio_file)
+    except Exception as e:
+        print(f"Erro ao falar texto: {e}")
+
+def listen_and_process():
+    """Escuta a fala do usuário e processa conforme o comando"""
+    with sr.Microphone() as source:
+        print("Aguardando comando... Diga 'traduza' ou 'fale traduzido'.")
+        audio = recognizer.listen(source)
+        try:
+            # Reconhece o comando inicial
+            command = recognizer.recognize_google(audio)
+            print(f"Comando detectado: {command}")
+
+            if "traduza" in command.lower():
+                print("Diga algo para traduzir...")
+                audio = recognizer.listen(source)
+                text = recognizer.recognize_google(audio)
+                print(f"Texto original: {text}")
+
+                # Detecta o idioma de entrada
+                source_language = detect_language(text)
+                
+                # Traduz para o idioma alvo
+                translated_text = translate_text(text, source_language, default_target_language)
+
+                # Fala o texto traduzido
+                speak_text(translated_text, default_target_language)
+
+            elif "fale traduzido" in command.lower():
+                print("Diga algo para traduzir de volta...")
+                audio = recognizer.listen(source)
+                text = recognizer.recognize_google(audio)
+                print(f"Texto original: {text}")
+
+                # Detecta o idioma de entrada
+                source_language = detect_language(text)
+
+                # Traduz de volta para o idioma original
+                translated_text = translate_text(text, source_language, source_language)
+
+                # Fala o texto traduzido de volta
+                speak_text(translated_text, source_language)
+
+            else:
+                print("Comando não reconhecido. Por favor, diga 'traduza' ou 'fale traduzido'.")
+
+        except sr.UnknownValueError:
+            print("Desculpe, não consegui entender o que você disse.")
+        except sr.RequestError as e:
+            print(f"Erro ao acessar o serviço de reconhecimento de fala; {e}")
+
+if __name__ == "__main__":
+    while True:
+        listen_and_process()
