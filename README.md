@@ -1,3 +1,5 @@
+@#*ainda não organizado, perdão*#@
+
 Resumo do Projeto: Fone de Ouvido Tradutor de Idiomas
 Objetivo: Desenvolver um fone de ouvido que permite tradução de idiomas em tempo real através de comandos de voz, oferecendo uma experiência de comunicação fluida entre diferentes idiomas.
 
