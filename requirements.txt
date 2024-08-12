@@ -1,0 +1,8 @@
+SpeechRecognition
+googletrans==4.0.0-rc1
+pyttsx3
+gtts
+playsound==1.2.2
+langdetect
+pygame
+
