@@ -1,0 +1,3 @@
+pip install -r requirements.txt
+
+coloque no terminal pwsh e chame o cód pelo comando 'pythom + nome da pasta'.
